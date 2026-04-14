@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { api, clearAuth, getUserEmail } from '@/lib/api';
 import type { Batch } from '@/lib/types';
 import { useLang } from '@/contexts/LangContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import Header from './Header';
 import UploadCard from './UploadCard';
 import BatchTable from './BatchTable';
@@ -18,8 +19,10 @@ interface Toast {
 
 export default function Dashboard() {
   const { t } = useLang();
+  const { theme } = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isDark = theme === 'dark';
 
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loadingBatches, setLoadingBatches] = useState(true);
@@ -27,20 +30,15 @@ export default function Dashboard() {
   const toastId = useRef(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Modal state
   const [modalBatchId, setModalBatchId] = useState<string | null>(null);
   const [modalBatchName, setModalBatchName] = useState('');
-
-  // Banner (verified / registered)
   const [banner, setBanner] = useState<{ msg: string; type: string } | null>(null);
 
-  // Auth guard
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const token = localStorage.getItem('token');
     if (!token) { router.push('/'); return; }
 
-    // URL param banners
     const verified = searchParams.get('verified');
     const registered = searchParams.get('registered');
     const err = searchParams.get('error');
@@ -71,7 +69,6 @@ export default function Dashboard() {
       const data = await api.listBatches();
       setBatches(data);
       setLoadingBatches(false);
-
       const hasProcessing = data.some((b) => b.status === 'PROCESSING');
       if (hasProcessing) startPolling(); else stopPolling();
     } catch (err: unknown) {
@@ -97,7 +94,6 @@ export default function Dashboard() {
     pollRef.current = null;
   }
 
-  // Cleanup on unmount
   useEffect(() => () => stopPolling(), []);
 
   function handleDelete(id: string) {
@@ -118,14 +114,39 @@ export default function Dashboard() {
     setModalBatchId(null);
   }
 
+  const toastColors: Record<string, string> = isDark ? {
+    success: 'bg-surface-container-high border border-outline-variant/20 text-white',
+    error: 'bg-error-container/40 border border-error/20 text-error',
+    warning: 'bg-surface-container-high border border-outline-variant/20 text-secondary',
+    info: 'bg-surface-container-high border border-outline-variant/20 text-on-surface-variant',
+  } : {
+    success: 'bg-white border border-slate-200 text-slate-800 shadow-sm',
+    error: 'bg-red-50 border border-red-200 text-red-700 shadow-sm',
+    warning: 'bg-amber-50 border border-amber-200 text-amber-700 shadow-sm',
+    info: 'bg-white border border-slate-200 text-slate-600 shadow-sm',
+  };
+
+  const bannerColors: Record<string, string> = isDark ? {
+    success: 'bg-surface-container-high border border-outline-variant/20 text-white',
+    error: 'bg-error-container/40 border border-error/20 text-error',
+    warning: 'bg-surface-container-high border border-outline-variant/20 text-secondary',
+  } : {
+    success: 'bg-green-50 border border-green-200 text-green-700',
+    error: 'bg-red-50 border border-red-200 text-red-700',
+    warning: 'bg-amber-50 border border-amber-200 text-amber-700',
+  };
+
   return (
-    <>
+    <div className={`min-h-screen ${isDark ? 'bg-background' : 'bg-slate-50'}`}>
       <Header />
 
       {/* Toasts */}
-      <div style={{ position: 'fixed', top: 70, right: 20, zIndex: 300, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="fixed top-24 right-6 z-[300] flex flex-col gap-2">
         {toasts.map((toast) => (
-          <div key={toast.id} className={`alert alert-${toast.type}`} style={{ margin: 0, minWidth: 260, boxShadow: 'var(--shadow)' }}>
+          <div
+            key={toast.id}
+            className={`px-4 py-3 rounded-xl text-sm font-medium min-w-[260px] ${toastColors[toast.type]}`}
+          >
             {toast.msg}
           </div>
         ))}
@@ -133,14 +154,16 @@ export default function Dashboard() {
 
       {/* Banner */}
       {banner && (
-        <div style={{ maxWidth: 1100, margin: '16px auto 0', padding: '0 24px' }}>
-          <div className={`alert alert-${banner.type}`}>{banner.msg}</div>
+        <div className="pt-24 px-6 md:px-12 max-w-7xl mx-auto">
+          <div className={`px-4 py-3 rounded-xl text-sm font-medium ${bannerColors[banner.type] || bannerColors.info}`}>
+            {banner.msg}
+          </div>
         </div>
       )}
 
-      <main className="main-content">
+      {/* Content */}
+      <div className={`${banner ? 'pt-6' : 'pt-32'} pb-20 px-6 md:px-12 max-w-7xl mx-auto space-y-16`}>
         <UploadCard onUploaded={handleUploaded} onNotify={notify} />
-
         <BatchTable
           batches={batches}
           loading={loadingBatches}
@@ -148,7 +171,7 @@ export default function Dashboard() {
           onView={openModal}
           onNotify={notify}
         />
-      </main>
+      </div>
 
       {modalBatchId && (
         <CompaniesModal
@@ -157,6 +180,6 @@ export default function Dashboard() {
           onClose={closeModal}
         />
       )}
-    </>
+    </div>
   );
 }

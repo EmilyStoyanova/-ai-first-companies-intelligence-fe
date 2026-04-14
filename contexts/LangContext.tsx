@@ -8,6 +8,7 @@ const translations = {
   bg: {
     // App
     appName: "Companies Intelligence",
+
     appTagline: "Data Enrich",
 
     // Auth
@@ -23,7 +24,6 @@ const translations = {
 
     // Dashboard
     dashboard: "Табло",
-    logout: "Изход",
     uploadTitle: "Качете CSV или Excel файл",
     uploadSubtitle: 'Файлът трябва да съдържа колона "domain" или "website".',
     chooseFile: "Изберете файл",
@@ -81,12 +81,28 @@ const translations = {
     invalidLink:
       "Тази връзка за потвърждение е невалидна или вече е използвана.",
 
+    // Dashboard headings
+    enrichmentEngine: "Domain Enrichment Engine",
+    uploadDomains: "Качи домейни",
+    selectFileOrDrag: "Изберете файл или го плъзнете тук",
+    batchHistory: "История на партидите",
+    batchId: "Партида",
+    date: "Дата",
+    totalDomains: "Общо домейни",
+    loadingBatches: "Зареждане на партиди…",
+    success: "Успех",
+    logout: "Изход",
+    firmographics: "Фирмография",
+    techStack: "Технологии",
+    contacts: "Контакти",
+
     // Language toggle
     langToggle: "EN",
   },
   en: {
     // App
     appName: "Companies Intelligence",
+
     appTagline: "Data Enrich",
 
     // Auth
@@ -102,7 +118,6 @@ const translations = {
 
     // Dashboard
     dashboard: "Dashboard",
-    logout: "Logout",
     uploadTitle: "Upload a CSV or Excel file",
     uploadSubtitle: 'The file should contain a "domain" or "website" column.',
     chooseFile: "Choose File",
@@ -158,6 +173,21 @@ const translations = {
     registeredBanner: "Welcome! A confirmation email has been sent to",
     checkInbox: ". Please check your inbox.",
     invalidLink: "That confirmation link is invalid or has already been used.",
+
+    // Dashboard headings
+    enrichmentEngine: "Domain Enrichment Engine",
+    uploadDomains: "Upload Domains",
+    selectFileOrDrag: "Select file or drag it here",
+    batchHistory: "Batch History",
+    batchId: "Batch ID",
+    date: "Date",
+    totalDomains: "Total Domains",
+    loadingBatches: "Loading batches…",
+    success: "Success",
+    logout: "Logout",
+    firmographics: "Firmographics",
+    techStack: "Tech Stack",
+    contacts: "Contacts",
 
     // Language toggle
     langToggle: "БГ",

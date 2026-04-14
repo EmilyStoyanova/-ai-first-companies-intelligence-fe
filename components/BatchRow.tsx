@@ -4,27 +4,29 @@ import { useEffect, useRef, useState } from 'react';
 import type { Batch } from '@/lib/types';
 import { api } from '@/lib/api';
 import { useLang } from '@/contexts/LangContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface Props {
   batch: Batch;
   onDelete: (id: string) => void;
   onView: (id: string, name: string) => void;
-  onNotify: (msg: string, type: 'success' | 'error' | 'info') => void;
+  onNotify: (msg: string, type: 'success' | 'error' | 'info' | 'warning') => void;
 }
 
 interface Anim {
-  current: number;   // where the counter is right now
-  target: number;    // where it should reach
+  current: number;
+  target: number;
   timer: ReturnType<typeof setInterval> | null;
-  finalized: boolean; // true once we've called setShowFinal
+  finalized: boolean;
 }
 
 export default function BatchRow({ batch, onDelete, onView, onNotify }: Props) {
   const { t } = useLang();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const realPct = Math.round(batch.completionPercentage);
   const isDone = batch.status === 'COMPLETED' || batch.status === 'FAILED';
 
-  // Batches already done on page-load show their final state immediately, no animation.
   const [displayPct, setDisplayPct] = useState(() => (isDone ? realPct : 0));
   const [showFinal, setShowFinal] = useState(() => isDone);
 
@@ -35,22 +37,14 @@ export default function BatchRow({ batch, onDelete, onView, onNotify }: Props) {
     finalized: isDone,
   });
 
-  // ── Ticker ────────────────────────────────────────────────────────────────
   function startTicker() {
     if (anim.current.timer || anim.current.finalized) return;
-
     anim.current.timer = setInterval(() => {
       const a = anim.current;
-
       if (a.current < a.target) {
-        a.current = Math.min(
-          a.current + (a.target - a.current > 15 ? 2 : 1),
-          a.target,
-        );
+        a.current = Math.min(a.current + (a.target - a.current > 15 ? 2 : 1), a.target);
         setDisplayPct(a.current);
       }
-
-      // Reached target while finalized → reveal the completed state
       if (a.finalized && a.current >= a.target) {
         clearInterval(a.timer!);
         a.timer = null;
@@ -60,47 +54,24 @@ export default function BatchRow({ batch, onDelete, onView, onNotify }: Props) {
   }
 
   function stopTicker() {
-    if (anim.current.timer) {
-      clearInterval(anim.current.timer);
-      anim.current.timer = null;
-    }
+    if (anim.current.timer) { clearInterval(anim.current.timer); anim.current.timer = null; }
   }
 
-  // ── Single effect: react to every status/percentage change ────────────────
   useEffect(() => {
     const a = anim.current;
-
-    // Always keep target up to date
     a.target = realPct;
-
-    if (batch.status === 'PROCESSING') {
-      // Start ticker if not already running
-      startTicker();
-      return;
-    }
-
+    if (batch.status === 'PROCESSING') { startTicker(); return; }
     if (isDone && !a.finalized) {
       a.finalized = true;
-
-      if (a.timer) {
-        // Ticker is running — it will call setShowFinal when current reaches target.
-        // Just make sure target is set (done above).
-      } else if (a.current >= realPct) {
-        // Already at the right percentage (e.g. PENDING → COMPLETED instantly)
-        setDisplayPct(realPct);
-        setShowFinal(true);
-      } else {
-        // Was PENDING, never animated — run a quick catch-up
-        startTicker();
-      }
+      if (a.timer) { /* will finalize when it reaches target */ }
+      else if (a.current >= realPct) { setDisplayPct(realPct); setShowFinal(true); }
+      else { startTicker(); }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [batch.status, realPct]);
 
-  // ── Cleanup on unmount ─────────────────────────────────────────────────────
   useEffect(() => () => stopTicker(), []);
 
-  // ── Delete ─────────────────────────────────────────────────────────────────
   async function handleDelete() {
     const name = batch.fileName || 'this batch';
     if (!confirm(`${t.confirmDelete} "${name}"?\n\n${t.confirmDeleteMsg}`)) return;
@@ -114,7 +85,6 @@ export default function BatchRow({ batch, onDelete, onView, onNotify }: Props) {
     }
   }
 
-  // ── Download ───────────────────────────────────────────────────────────────
   async function handleDownload(format: 'csv' | 'xlsx') {
     try {
       const res = await api.downloadBatch(batch.id, format);
@@ -132,64 +102,145 @@ export default function BatchRow({ batch, onDelete, onView, onNotify }: Props) {
     }
   }
 
-  // ── Badge ──────────────────────────────────────────────────────────────────
-  function Badge() {
-    // While animating toward completion, keep showing "Processing"
-    const status = showFinal ? batch.status : batch.status === 'COMPLETED' || batch.status === 'FAILED' ? (anim.current.timer ? 'PROCESSING' : batch.status) : batch.status;
-    const map: Record<string, React.ReactNode> = {
-      PROCESSING: <span className="badge badge-processing">⟳ {t.processing}</span>,
-      COMPLETED:  <span className="badge badge-completed">✓ {t.done}</span>,
-      FAILED:     <span className="badge badge-failed">✕ {t.failed}</span>,
-      PENDING:    <span className="badge badge-pending">{t.pending}</span>,
-    };
-    return <>{map[status] ?? <span className="badge badge-pending">{status}</span>}</>;
+  const effectiveStatus =
+    showFinal
+      ? batch.status
+      : (batch.status === 'COMPLETED' || batch.status === 'FAILED') && anim.current.timer
+      ? 'PROCESSING'
+      : batch.status;
+
+  const isCompleted = showFinal && batch.status === 'COMPLETED';
+  const isProcessing = effectiveStatus === 'PROCESSING';
+
+  function StatusBadge() {
+    if (effectiveStatus === 'PROCESSING') {
+      return (
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${isDark ? 'bg-secondary-container text-on-secondary-container' : 'bg-blue-100 text-blue-700'}`}>
+          <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isDark ? 'bg-secondary' : 'bg-blue-500'}`} />
+          {t.processing}
+        </span>
+      );
+    }
+    if (effectiveStatus === 'COMPLETED') {
+      return (
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${isDark ? 'bg-surface-container-highest text-primary' : 'bg-green-100 text-green-700'}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-primary' : 'bg-green-500'}`} />
+          {t.done}
+        </span>
+      );
+    }
+    if (effectiveStatus === 'FAILED') {
+      return (
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${isDark ? 'bg-error-container/30 text-error' : 'bg-red-100 text-red-700'}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-error' : 'bg-red-500'}`} />
+          {t.failed}
+        </span>
+      );
+    }
+    return (
+      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${isDark ? 'bg-surface-container-high text-on-surface-variant' : 'bg-slate-100 text-slate-500'}`}>
+        <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-outline' : 'bg-slate-400'}`} />
+        {t.pending}
+      </span>
+    );
   }
 
-  const barClass = `progress-bar${showFinal && batch.status === 'COMPLETED' ? ' done' : ''}`;
-
-  const date = new Date(batch.createdAt).toLocaleDateString('bg-BG', {
-    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+  const date = new Date(batch.createdAt).toLocaleDateString('en-GB', {
+    month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit',
   });
 
+  const hoverRow = isDark ? 'hover:bg-surface-container-high/50' : 'hover:bg-slate-50';
+  const idColor = isDark ? 'text-primary' : 'text-slate-900';
+  const subColor = isDark ? 'text-on-surface-variant' : 'text-slate-400';
+  const dateColor = isDark ? 'text-on-surface-variant' : 'text-slate-500';
+  const countColor = isDark ? 'text-white' : 'text-slate-800';
+  const actionHover = isDark
+    ? 'hover:bg-surface-container-highest text-on-surface-variant hover:text-white'
+    : 'hover:bg-slate-100 text-slate-400 hover:text-slate-700';
+  const deleteHover = isDark
+    ? 'hover:bg-error-container/30 text-on-surface-variant hover:text-error'
+    : 'hover:bg-red-50 text-slate-400 hover:text-red-600';
+
+  const progressBg = isDark ? 'bg-surface-container-highest' : 'bg-slate-200';
+  const progressFill = isCompleted
+    ? isDark ? 'bg-white' : 'bg-slate-800'
+    : isProcessing
+    ? isDark ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'bg-blue-500'
+    : isDark ? 'bg-outline' : 'bg-slate-400';
+  const progressLabel = isProcessing
+    ? isDark ? 'text-secondary' : 'text-blue-600'
+    : isDark ? 'text-on-surface-variant' : 'text-slate-500';
+
   return (
-    <tr>
-      <td>
-        <div style={{ fontWeight: 500 }}>{batch.fileName || 'Unknown'}</div>
-        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{batch.id.slice(0, 8)}…</div>
+    <tr className={`transition-colors ${hoverRow}`}>
+      <td className="px-6 py-6">
+        <div className={`font-mono text-sm font-medium ${idColor}`}>
+          #{batch.id.slice(0, 8).toUpperCase()}
+        </div>
+        {batch.fileName && (
+          <div className={`text-[11px] mt-0.5 truncate max-w-[140px] ${subColor}`}>{batch.fileName}</div>
+        )}
       </td>
 
-      <td><Badge /></td>
+      <td className={`px-6 py-6 text-sm whitespace-nowrap ${dateColor}`}>{date}</td>
 
-      <td>
-        <div className="progress-wrap">
-          <div className="progress">
-            <div className={barClass} style={{ width: `${displayPct}%` }} />
+      <td className={`px-6 py-6 text-sm font-medium ${countColor}`}>
+        {batch.totalCompanies.toLocaleString()}
+      </td>
+
+      <td className="px-6 py-6">
+        <div className="space-y-2">
+          <div className={`flex justify-between text-[10px] font-bold uppercase tracking-tighter ${progressLabel}`}>
+            <span>{isProcessing ? t.processing : isCompleted ? t.success : effectiveStatus}</span>
+            <span>{displayPct}%</span>
           </div>
-          <span className="progress-pct">{displayPct}%</span>
+          <div className={`h-1 w-full rounded-full overflow-hidden ${progressBg}`}>
+            <div
+              className={`h-full rounded-full transition-all duration-[90ms] linear ${progressFill}`}
+              style={{ width: `${displayPct}%` }}
+            />
+          </div>
         </div>
       </td>
 
-      <td>{batch.processedCompanies} / {batch.totalCompanies}</td>
+      <td className="px-6 py-6"><StatusBadge /></td>
 
-      <td>{date}</td>
-
-      <td>
-        <div className="actions">
+      <td className="px-6 py-6 text-right">
+        <div className="flex justify-end gap-2">
           <button
-            className="btn btn-sm btn-secondary"
-            onClick={() => onView(batch.id, batch.fileName || 'Batch')}
+            onClick={() => onView(batch.id, batch.fileName || `Batch ${batch.id.slice(0, 8)}`)}
+            className={`p-2 rounded transition-all ${actionHover}`}
+            title="View companies"
           >
-            {t.view}
+            <span className="material-symbols-outlined text-[18px]">visibility</span>
           </button>
 
-          {showFinal && batch.status === 'COMPLETED' && (
+          {isCompleted && (
             <>
-              <button className="btn btn-sm btn-secondary" onClick={() => handleDownload('csv')}>CSV</button>
-              <button className="btn btn-sm btn-secondary" onClick={() => handleDownload('xlsx')}>XLSX</button>
+              <button
+                onClick={() => handleDownload('csv')}
+                className={`p-2 rounded transition-all text-[10px] font-bold ${actionHover}`}
+                title="Download CSV"
+              >
+                CSV
+              </button>
+              <button
+                onClick={() => handleDownload('xlsx')}
+                className={`p-2 rounded transition-all text-[10px] font-bold ${actionHover}`}
+                title="Download XLSX"
+              >
+                XLSX
+              </button>
             </>
           )}
 
-          <button className="btn btn-sm btn-danger" onClick={handleDelete} title={t.delete}>✕</button>
+          <button
+            onClick={handleDelete}
+            className={`p-2 rounded transition-all ${deleteHover}`}
+            title="Delete batch"
+          >
+            <span className="material-symbols-outlined text-[18px]">delete</span>
+          </button>
         </div>
       </td>
     </tr>

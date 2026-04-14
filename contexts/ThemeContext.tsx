@@ -12,25 +12,26 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setTheme] = useState<Theme>('dark');
 
-  // On mount: read localStorage, fall back to OS preference
   useEffect(() => {
     const saved = localStorage.getItem('theme') as Theme | null;
-    const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
+    const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     apply(saved ?? preferred);
   }, []);
 
   function apply(t: Theme) {
     setTheme(t);
-    document.documentElement.setAttribute('data-theme', t);
     localStorage.setItem('theme', t);
+    if (t === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme: () => apply(theme === 'light' ? 'dark' : 'light') }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme: () => apply(theme === 'dark' ? 'light' : 'dark') }}>
       {children}
     </ThemeContext.Provider>
   );
