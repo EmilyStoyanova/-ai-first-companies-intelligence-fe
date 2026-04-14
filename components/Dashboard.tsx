@@ -8,6 +8,7 @@ import { useLang } from '@/contexts/LangContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import Header from './Header';
 import UploadCard from './UploadCard';
+import PersonaSearchCard from './PersonaSearchCard';
 import BatchTable from './BatchTable';
 import CompaniesModal from './CompaniesModal';
 
@@ -33,6 +34,7 @@ export default function Dashboard() {
   const [modalBatchId, setModalBatchId] = useState<string | null>(null);
   const [modalBatchName, setModalBatchName] = useState('');
   const [banner, setBanner] = useState<{ msg: string; type: string } | null>(null);
+  const [activeTab, setActiveTab] = useState<'upload' | 'persona'>('upload');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -163,7 +165,43 @@ export default function Dashboard() {
 
       {/* Content */}
       <div className={`${banner ? 'pt-6' : 'pt-32'} pb-20 px-6 md:px-12 max-w-7xl mx-auto space-y-16`}>
-        <UploadCard onUploaded={handleUploaded} onNotify={notify} />
+
+        {/* Tab switcher */}
+        <div className={`inline-flex rounded-xl p-1 gap-1 ${isDark ? 'bg-surface-container-low border border-outline-variant/15' : 'bg-slate-100 border border-slate-200'}`}>
+          <button
+            onClick={() => setActiveTab('upload')}
+            className={`px-5 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all duration-200 ${
+              activeTab === 'upload'
+                ? isDark ? 'bg-surface-container-highest text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm'
+                : isDark ? 'text-on-surface-variant hover:text-white' : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[16px]">upload_file</span>
+              {t.uploadTab}
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab('persona')}
+            className={`px-5 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all duration-200 ${
+              activeTab === 'persona'
+                ? isDark ? 'bg-surface-container-highest text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm'
+                : isDark ? 'text-on-surface-variant hover:text-white' : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[16px]">travel_explore</span>
+              {t.personaTab}
+            </span>
+          </button>
+        </div>
+
+        {activeTab === 'upload' ? (
+          <UploadCard onUploaded={handleUploaded} onNotify={notify} />
+        ) : (
+          <PersonaSearchCard onSearched={handleUploaded} onNotify={notify} />
+        )}
+
         <BatchTable
           batches={batches}
           loading={loadingBatches}

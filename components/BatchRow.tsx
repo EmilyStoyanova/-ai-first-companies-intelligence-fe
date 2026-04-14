@@ -174,11 +174,22 @@ export default function BatchRow({ batch, onDelete, onView, onNotify }: Props) {
   return (
     <tr className={`transition-colors ${hoverRow}`}>
       <td className="px-6 py-6">
-        <div className={`font-mono text-sm font-medium ${idColor}`}>
-          #{batch.id.slice(0, 8).toUpperCase()}
+        <div className="flex items-center gap-1.5">
+          {batch.sourceType === 'PERSONA_SEARCH' ? (
+            <span className={`material-symbols-outlined text-[14px] flex-shrink-0 ${isDark ? 'text-primary' : 'text-slate-500'}`}>
+              travel_explore
+            </span>
+          ) : (
+            <span className={`material-symbols-outlined text-[14px] flex-shrink-0 ${isDark ? 'text-on-surface-variant' : 'text-slate-400'}`}>
+              upload_file
+            </span>
+          )}
+          <div className={`font-mono text-sm font-medium ${idColor}`}>
+            #{batch.id.slice(0, 8).toUpperCase()}
+          </div>
         </div>
         {batch.fileName && (
-          <div className={`text-[11px] mt-0.5 truncate max-w-[140px] ${subColor}`}>{batch.fileName}</div>
+          <div className={`text-[11px] mt-0.5 truncate max-w-[160px] ${subColor}`}>{batch.fileName}</div>
         )}
       </td>
 

@@ -26,14 +26,28 @@ export interface Company {
   profile?: CompanyProfile;
 }
 
+export interface SearchQuery {
+  persona: string;
+  location: string;
+  keywords?: string;
+  maxResults?: number;
+}
+
 export interface Batch {
   id: string;
   fileName?: string;
+  sourceType?: 'UPLOAD' | 'PERSONA_SEARCH';
+  searchQuery?: SearchQuery;
   status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
   totalCompanies: number;
   processedCompanies: number;
   completionPercentage: number;
   createdAt: string;
+}
+
+export interface PersonaSearchResult {
+  batchId: string;
+  message: string;
 }
 
 export interface PaginatedCompanies {

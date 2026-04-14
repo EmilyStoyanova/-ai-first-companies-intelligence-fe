@@ -1,4 +1,4 @@
-import type { AuthResult, Batch, PaginatedCompanies, UploadResult } from './types';
+import type { AuthResult, Batch, PaginatedCompanies, PersonaSearchResult, UploadResult } from './types';
 
 const API_BASE = '/api';
 
@@ -98,4 +98,11 @@ export const api = {
     request<Response>('GET', `/batches/${id}/download?format=${format}`),
 
   deleteBatch: (id: string) => request<void>('DELETE', `/batches/${id}`),
+
+  createPersonaSearch: (params: {
+    persona: string;
+    location: string;
+    keywords?: string;
+    maxResults?: number;
+  }) => request<PersonaSearchResult>('POST', '/persona-searches', params),
 };

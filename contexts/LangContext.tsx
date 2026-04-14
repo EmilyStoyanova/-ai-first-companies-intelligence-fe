@@ -96,6 +96,24 @@ const translations = {
     techStack: "Технологии",
     contacts: "Контакти",
 
+    // Persona search
+    personaSearch: "Търсене по персона",
+    personaSearchSubtitle: "Открийте организации по категория и местоположение",
+    personaLabel: "Категория / персона",
+    personaPlaceholder: "напр. детски градини, зъболекари, автосервизи",
+    locationLabel: "Област / Град",
+    locationPlaceholder: "напр. област Ловеч, гр. Варна",
+    keywordsLabel: "Допълнителни ключови думи (незадължително)",
+    keywordsPlaceholder: "напр. частни, общински",
+    maxResultsLabel: "Максимален брой резултати",
+    searchStart: "Търси & Обработи",
+    searching: "Търсене…",
+    searchSuccess: "Търсенето е стартирано! Резултатите ще се появят в таблицата.",
+    uploadTab: "Качи CSV",
+    personaTab: "Търсене по персона",
+    sourcePersona: "Персона",
+    sourceUpload: "CSV файл",
+
     // Language toggle
     langToggle: "EN",
   },
@@ -188,6 +206,24 @@ const translations = {
     firmographics: "Firmographics",
     techStack: "Tech Stack",
     contacts: "Contacts",
+
+    // Persona search
+    personaSearch: "Persona Search",
+    personaSearchSubtitle: "Discover organizations by category and location",
+    personaLabel: "Category / Persona",
+    personaPlaceholder: "e.g. kindergartens, dentists, auto repair shops",
+    locationLabel: "Oblast / City",
+    locationPlaceholder: "e.g. Lovech oblast, Varna city",
+    keywordsLabel: "Additional keywords (optional)",
+    keywordsPlaceholder: "e.g. private, municipal",
+    maxResultsLabel: "Max results",
+    searchStart: "Search & Process",
+    searching: "Searching…",
+    searchSuccess: "Search started! Results will appear in the table below.",
+    uploadTab: "Upload CSV",
+    personaTab: "Persona Search",
+    sourcePersona: "Persona",
+    sourceUpload: "CSV file",
 
     // Language toggle
     langToggle: "БГ",
