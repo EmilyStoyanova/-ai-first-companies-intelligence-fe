@@ -67,6 +67,19 @@ export interface UploadResult {
   skipped: number;
 }
 
+export type CandidateStatus = 'KEPT' | 'FILTERED' | 'BLOCKED' | 'EXCLUDED';
+
+export interface DiscoveryCandidate {
+  id: string;
+  batchId: string;
+  domain: string;
+  url: string;
+  title?: string;
+  snippet?: string;
+  status: CandidateStatus;
+  createdAt: string;
+}
+
 export interface AuthResult {
   token: string;
   user: {

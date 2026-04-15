@@ -1,4 +1,4 @@
-import type { AuthResult, Batch, PaginatedCompanies, PersonaSearchResult, UploadResult } from './types';
+import type { AuthResult, Batch, DiscoveryCandidate, PaginatedCompanies, PersonaSearchResult, UploadResult } from './types';
 
 const API_BASE = '/api';
 
@@ -105,4 +105,14 @@ export const api = {
     keywords?: string;
     maxResults?: number;
   }) => request<PersonaSearchResult>('POST', '/persona-searches', params),
+
+  getCandidates: (batchId: string) =>
+    request<DiscoveryCandidate[]>('GET', `/batches/${batchId}/candidates`),
+
+  updateCandidate: (batchId: string, domain: string, action: 'exclude' | 'include') =>
+    request<{ ok: boolean; crawlTriggered?: boolean }>(
+      'PATCH',
+      `/batches/${batchId}/candidates/${encodeURIComponent(domain)}`,
+      { action },
+    ),
 };

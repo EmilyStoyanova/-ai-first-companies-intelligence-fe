@@ -114,6 +114,18 @@ const translations = {
     sourcePersona: "Персона",
     sourceUpload: "CSV файл",
 
+    // Candidates tab
+    resultsTab: "Резултати",
+    candidatesTab: "Всички кандидати",
+    candidateKept: "Включен",
+    candidateFiltered: "Филтриран от AI",
+    candidateBlocked: "Блокиран",
+    candidateExcluded: "Изключен",
+    excludeBtn: "Изключи",
+    includeBtn: "Добави",
+    candidateTitle: "Заглавие",
+    noCandidates: "Няма данни за кандидати. Само резултати от търсене по персона показват кандидати.",
+
     // Language toggle
     langToggle: "EN",
   },
@@ -224,6 +236,18 @@ const translations = {
     personaTab: "Persona Search",
     sourcePersona: "Persona",
     sourceUpload: "CSV file",
+
+    // Candidates tab
+    resultsTab: "Results",
+    candidatesTab: "All Candidates",
+    candidateKept: "Included",
+    candidateFiltered: "Filtered by AI",
+    candidateBlocked: "Blocked",
+    candidateExcluded: "Excluded",
+    excludeBtn: "Exclude",
+    includeBtn: "Add",
+    candidateTitle: "Title",
+    noCandidates: "No candidate data. Only persona search batches show candidates.",
 
     // Language toggle
     langToggle: "БГ",

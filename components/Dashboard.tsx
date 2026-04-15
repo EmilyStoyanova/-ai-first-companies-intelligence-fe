@@ -33,6 +33,7 @@ export default function Dashboard() {
 
   const [modalBatchId, setModalBatchId] = useState<string | null>(null);
   const [modalBatchName, setModalBatchName] = useState('');
+  const [modalIsPersonaSearch, setModalIsPersonaSearch] = useState(false);
   const [banner, setBanner] = useState<{ msg: string; type: string } | null>(null);
   const [activeTab, setActiveTab] = useState<'upload' | 'persona'>('upload');
 
@@ -110,6 +111,8 @@ export default function Dashboard() {
   function openModal(id: string, name: string) {
     setModalBatchId(id);
     setModalBatchName(name);
+    const batch = batches.find((b) => b.id === id);
+    setModalIsPersonaSearch(batch?.sourceType === 'PERSONA_SEARCH');
   }
 
   function closeModal() {
@@ -215,6 +218,7 @@ export default function Dashboard() {
         <CompaniesModal
           batchId={modalBatchId}
           batchName={modalBatchName}
+          isPersonaSearch={modalIsPersonaSearch}
           onClose={closeModal}
         />
       )}
