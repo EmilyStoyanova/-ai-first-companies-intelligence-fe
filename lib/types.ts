@@ -2,6 +2,7 @@ export interface TeamMember {
   name: string;
   position?: string;
   email?: string;
+  linkedin?: string;
 }
 
 export interface CompanyProfile {
