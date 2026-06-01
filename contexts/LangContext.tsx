@@ -25,7 +25,7 @@ const translations = {
     // Dashboard
     dashboard: "Табло",
     uploadTitle: "Качете CSV или Excel файл",
-    uploadSubtitle: 'Файлът трябва да съдържа колона "domain" или "website".',
+    uploadSubtitle: 'Колона "domain"/"website" (напр. firma.bg) или "Име на фирмата" с имена на компании.',
     chooseFile: "Изберете файл",
     forceRecrawl: "Принудително прекопиране",
     uploadProcess: "Качи & Обработи",
@@ -58,6 +58,7 @@ const translations = {
     score: "Резултат",
     emails: "Имейли",
     team: "Екип",
+    personalized: "Персонализация",
     noCompanies: "Няма компании в тази партида.",
     showing: "Показване",
     of: "от",
@@ -149,7 +150,7 @@ const translations = {
     // Dashboard
     dashboard: "Dashboard",
     uploadTitle: "Upload a CSV or Excel file",
-    uploadSubtitle: 'The file should contain a "domain" or "website" column.',
+    uploadSubtitle: 'A "domain"/"website" column (e.g. company.com) or "Company name" column with business names.',
     chooseFile: "Choose File",
     forceRecrawl: "Force re-crawl",
     uploadProcess: "Upload & Process",
@@ -182,6 +183,7 @@ const translations = {
     score: "Score",
     emails: "Emails",
     team: "Team",
+    personalized: "Personalized",
     noCompanies: "No companies in this batch yet.",
     showing: "Showing",
     of: "of",

@@ -18,6 +18,14 @@ export interface CompanyProfile {
   completionScore: number;
 }
 
+export interface PersonalizedContent {
+  emailSubject?: string;
+  openingLine?: string;
+  valueProposition?: string;
+  fullMessage?: string;
+  status?: string;
+}
+
 export interface Company {
   id: string;
   domain: string;
@@ -25,6 +33,7 @@ export interface Company {
   crawlStatus: 'PENDING' | 'CRAWLING' | 'COMPLETED' | 'FAILED';
   lastCrawledAt?: string;
   profile?: CompanyProfile;
+  personalizedContents?: PersonalizedContent[];
 }
 
 export interface SearchQuery {

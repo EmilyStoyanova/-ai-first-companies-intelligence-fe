@@ -149,6 +149,9 @@ export default function CompaniesModal({ batchId, batchName, isPersonaSearch, on
     const name = profile?.name || c.name || '—';
     const emails: string[] = Array.isArray(profile?.emails) ? profile!.emails : [];
     const team: TeamMember[] = Array.isArray(profile?.team) ? (profile!.team as TeamMember[]) : [];
+    const personalized = c.personalizedContents?.[0];
+    const personalizedPreview =
+      personalized?.openingLine || personalized?.fullMessage || '';
 
     return (
       <tr key={c.id} className="hover:bg-surface-container-high/50 transition-colors">
@@ -180,6 +183,9 @@ export default function CompaniesModal({ batchId, batchName, isPersonaSearch, on
           {emails.slice(0, 2).join(', ') || '—'}
         </td>
         <td className="px-6 py-4">{renderTeam(team)}</td>
+        <td className="px-6 py-4 text-xs text-on-surface-variant max-w-[220px] truncate" title={personalizedPreview}>
+          {personalizedPreview || '—'}
+        </td>
         {isPersonaSearch && (
           <td className="px-6 py-4">
             <button
@@ -376,6 +382,7 @@ export default function CompaniesModal({ batchId, batchName, isPersonaSearch, on
                             <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant whitespace-nowrap">{t.score}</th>
                             <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant whitespace-nowrap">{t.emails}</th>
                             <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant whitespace-nowrap">{t.team}</th>
+                            <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant whitespace-nowrap">{t.personalized}</th>
                             {isPersonaSearch && (
                               <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant whitespace-nowrap">{t.actions}</th>
                             )}
