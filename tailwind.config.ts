@@ -70,6 +70,15 @@ const config: Config = {
         body: ['Inter', 'sans-serif'],
         label: ['Inter', 'sans-serif'],
       },
+      keyframes: {
+        'slide-in-right': {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+      },
+      animation: {
+        'slide-in-right': 'slide-in-right 0.22s ease-out',
+      },
     },
   },
   plugins: [forms],

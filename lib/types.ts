@@ -9,6 +9,8 @@ export interface CompanyProfile {
   name?: string;
   description?: string;
   location?: string;
+  industry?: string;
+  foundingYear?: number;
   emails: string[];
   phones: string[];
   services: string[];

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import type { Company, DiscoveryCandidate, PaginatedCompanies, TeamMember } from '@/lib/types';
 import { api } from '@/lib/api';
 import { useLang } from '@/contexts/LangContext';
+import CompanyDetailPanel from './CompanyDetailPanel';
 
 interface Props {
   batchId: string | null;
@@ -30,6 +31,7 @@ export default function CompaniesModal({ batchId, batchName, isPersonaSearch, on
   const [updatingDomain, setUpdatingDomain] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<Tab>('results');
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
 
   useEffect(() => {
     if (!batchId) return;
@@ -154,7 +156,11 @@ export default function CompaniesModal({ batchId, batchName, isPersonaSearch, on
       personalized?.openingLine || personalized?.fullMessage || '';
 
     return (
-      <tr key={c.id} className="hover:bg-surface-container-high/50 transition-colors">
+      <tr
+        key={c.id}
+        className="hover:bg-surface-container-high/50 transition-colors cursor-pointer"
+        onClick={() => setSelectedCompany(c)}
+      >
         <td className="px-6 py-4">
           <a
             href={`https://${c.domain}`}
@@ -165,7 +171,26 @@ export default function CompaniesModal({ batchId, batchName, isPersonaSearch, on
             {c.domain}
           </a>
         </td>
-        <td className="px-6 py-4 text-sm text-white">{name}</td>
+        <td className="px-6 py-4">
+          <div
+            className="space-y-0.5"
+            title={profile?.history || undefined}
+          >
+            <div className="text-sm text-white font-medium">{name}</div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {profile?.industry && (
+                <span className="text-[11px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium leading-none">
+                  {profile.industry}
+                </span>
+              )}
+              {profile?.foundingYear && (
+                <span className="text-[11px] text-on-surface-variant leading-none">
+                  Est. {profile.foundingYear}
+                </span>
+              )}
+            </div>
+          </div>
+        </td>
         <td className="px-6 py-4">
           <span className={`text-xs font-bold uppercase tracking-wide ${crawlStatusBadge(c.crawlStatus)}`}>
             {c.crawlStatus}
@@ -307,6 +332,7 @@ export default function CompaniesModal({ batchId, batchName, isPersonaSearch, on
   const totalPages = pagination?.pages ?? 1;
 
   return (
+    <>
     <div
       className="fixed inset-0 bg-background/70 backdrop-blur-sm flex items-center justify-center z-[200] p-4 md:p-8"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
@@ -433,5 +459,13 @@ export default function CompaniesModal({ batchId, batchName, isPersonaSearch, on
         )}
       </div>
     </div>
+
+    {selectedCompany && (
+      <CompanyDetailPanel
+        company={selectedCompany}
+        onClose={() => setSelectedCompany(null)}
+      />
+    )}
+    </>
   );
 }

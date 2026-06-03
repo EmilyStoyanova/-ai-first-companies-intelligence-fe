@@ -127,8 +127,35 @@ const translations = {
     candidateTitle: "Заглавие",
     noCandidates: "Няма данни за кандидати. Само резултати от търсене по персона показват кандидати.",
 
+    // Re-enrich
+    reEnrich: "Обогати",
+    reEnriching: "Обогатяване…",
+    reEnrichDone: (n: number) => `Обновени ${n} компании`,
+
     // Language toggle
     langToggle: "EN",
+
+    // Review panel
+    reviewProfile: "Профил",
+    reviewContact: "Контакти",
+    reviewTeam: "Екип",
+    reviewServices: "Услуги",
+    reviewHistory: "История",
+    reviewAiEmail: "AI Имейл",
+    reviewFounded: "Основана",
+    reviewIndustry: "Индустрия",
+    reviewDescription: "Описание",
+    reviewLocation: "Локация",
+    reviewPhones: "Телефони",
+    reviewSocialLinks: "Социални мрежи",
+    reviewEmailSubject: "Тема",
+    reviewOpeningLine: "Начало",
+    reviewValueProp: "Стойност",
+    reviewFullMessage: "Пълен имейл",
+    reviewCopy: "Копирай",
+    reviewCopied: "Копирано!",
+    reviewNoData: "Няма данни",
+    reviewPosition: "Позиция",
   },
   en: {
     // App
@@ -251,8 +278,35 @@ const translations = {
     candidateTitle: "Title",
     noCandidates: "No candidate data. Only persona search batches show candidates.",
 
+    // Re-enrich
+    reEnrich: "Re-enrich",
+    reEnriching: "Enriching…",
+    reEnrichDone: (n: number) => `Updated ${n} companies`,
+
     // Language toggle
     langToggle: "БГ",
+
+    // Review panel
+    reviewProfile: "Profile",
+    reviewContact: "Contact",
+    reviewTeam: "Team",
+    reviewServices: "Services",
+    reviewHistory: "History",
+    reviewAiEmail: "AI Email",
+    reviewFounded: "Founded",
+    reviewIndustry: "Industry",
+    reviewDescription: "Description",
+    reviewLocation: "Location",
+    reviewPhones: "Phones",
+    reviewSocialLinks: "Social Links",
+    reviewEmailSubject: "Subject",
+    reviewOpeningLine: "Opening",
+    reviewValueProp: "Value",
+    reviewFullMessage: "Full Email",
+    reviewCopy: "Copy",
+    reviewCopied: "Copied!",
+    reviewNoData: "No data",
+    reviewPosition: "Position",
   },
 } as const;
 
