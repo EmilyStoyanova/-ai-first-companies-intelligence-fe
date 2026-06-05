@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { api, clearAuth, getUserEmail } from '@/lib/api';
+import { api, clearAuth, getUserEmail, setToken } from '@/lib/api';
 import type { Batch } from '@/lib/types';
 import { useLang } from '@/contexts/LangContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -47,6 +47,8 @@ export default function Dashboard() {
     const err = searchParams.get('error');
 
     if (verified === 'true') {
+      const freshToken = searchParams.get('token');
+      if (freshToken) setToken(freshToken);
       setBanner({ msg: t.verifiedBanner, type: 'success' });
       window.history.replaceState({}, '', '/dashboard');
       setTimeout(() => setBanner(null), 6000);
@@ -211,6 +213,7 @@ export default function Dashboard() {
           onDelete={handleDelete}
           onView={openModal}
           onNotify={notify}
+          onReEnrich={loadBatches}
         />
       </div>
 

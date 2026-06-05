@@ -11,6 +11,7 @@ interface Props {
   onDelete: (id: string) => void;
   onView: (id: string, name: string) => void;
   onNotify: (msg: string, type: 'success' | 'error' | 'info' | 'warning') => void;
+  onReEnrich?: () => void;
 }
 
 interface Anim {
@@ -20,7 +21,7 @@ interface Anim {
   finalized: boolean;
 }
 
-export default function BatchRow({ batch, onDelete, onView, onNotify }: Props) {
+export default function BatchRow({ batch, onDelete, onView, onNotify, onReEnrich }: Props) {
   const { t } = useLang();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -71,6 +72,21 @@ export default function BatchRow({ batch, onDelete, onView, onNotify }: Props) {
   }, [batch.status, realPct]);
 
   useEffect(() => () => stopTicker(), []);
+
+  const [reEnriching, setReEnriching] = useState(false);
+
+  async function handleReEnrich() {
+    setReEnriching(true);
+    try {
+      const result = await api.reEnrichBatch(batch.id);
+      onNotify(t.reEnrichDone(result.reEnqueuedCompanies), 'success');
+      onReEnrich?.();
+    } catch (err: unknown) {
+      onNotify(err instanceof Error ? err.message : String(err), 'error');
+    } finally {
+      setReEnriching(false);
+    }
+  }
 
   async function handleDelete() {
     const name = batch.fileName || 'this batch';
@@ -228,6 +244,16 @@ export default function BatchRow({ batch, onDelete, onView, onNotify }: Props) {
 
           {isCompleted && (
             <>
+              <button
+                onClick={handleReEnrich}
+                disabled={reEnriching}
+                className={`p-2 rounded transition-all ${actionHover} disabled:opacity-50`}
+                title={t.reEnrich}
+              >
+                <span className={`material-symbols-outlined text-[18px] ${reEnriching ? 'animate-spin' : ''}`}>
+                  refresh
+                </span>
+              </button>
               <button
                 onClick={() => handleDownload('csv')}
                 className={`p-2 rounded transition-all text-[10px] font-bold ${actionHover}`}

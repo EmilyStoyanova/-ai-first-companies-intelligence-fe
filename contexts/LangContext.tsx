@@ -25,7 +25,8 @@ const translations = {
     // Dashboard
     dashboard: "Табло",
     uploadTitle: "Качете CSV или Excel файл",
-    uploadSubtitle: 'Колона "domain"/"website" (напр. firma.bg) или "Име на фирмата" с имена на компании.',
+    uploadSubtitle: 'Файлът трябва да съдържа колона с домейни (напр. firma.bg, company.com). Имената на фирми не се поддържат.',
+    uploadNoDomains: 'Файлът не съдържа валидни домейни. Всеки ред трябва да е домейн (напр. firma.bg), а не име на фирма.',
     chooseFile: "Изберете файл",
     forceRecrawl: "Принудително прекопиране",
     uploadProcess: "Качи & Обработи",
@@ -177,7 +178,8 @@ const translations = {
     // Dashboard
     dashboard: "Dashboard",
     uploadTitle: "Upload a CSV or Excel file",
-    uploadSubtitle: 'A "domain"/"website" column (e.g. company.com) or "Company name" column with business names.',
+    uploadSubtitle: 'File must contain a column with domains (e.g. firma.bg, company.com). Company names are not supported.',
+    uploadNoDomains: 'No valid domains found in the file. Each row must be a domain (e.g. firma.bg), not a company name.',
     chooseFile: "Choose File",
     forceRecrawl: "Force re-crawl",
     uploadProcess: "Upload & Process",

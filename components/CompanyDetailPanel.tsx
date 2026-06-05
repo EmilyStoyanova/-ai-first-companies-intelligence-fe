@@ -214,7 +214,7 @@ export default function CompanyDetailPanel({ company, onClose }: Props) {
           {services.length > 0 && (
             <Section title={t.reviewServices} icon="build">
               <div className="flex flex-wrap gap-1.5">
-                {services.map((s) => <Tag key={s} label={s} />)}
+                {[...new Set(services)].map((s) => <Tag key={s} label={s} />)}
               </div>
             </Section>
           )}

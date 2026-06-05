@@ -77,6 +77,7 @@ export interface UploadResult {
   totalCompanies: number;
   jobsEnqueued: number;
   skipped: number;
+  invalidRows?: number;
 }
 
 export type CandidateStatus = 'KEPT' | 'FILTERED' | 'BLOCKED' | 'EXCLUDED';

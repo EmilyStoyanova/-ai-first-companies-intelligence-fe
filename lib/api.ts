@@ -100,7 +100,7 @@ export const api = {
   deleteBatch: (id: string) => request<void>('DELETE', `/batches/${id}`),
 
   reEnrichBatch: (id: string) =>
-    request<{ updated: number; total: number }>('POST', `/batches/${id}/re-enrich`),
+    request<{ batchId: string; reEnqueuedCompanies: number; status: string }>('POST', `/batches/${id}/re-enrich`),
 
   createPersonaSearch: (params: {
     persona: string;

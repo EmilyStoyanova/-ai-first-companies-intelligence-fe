@@ -47,15 +47,18 @@ export default function UploadCard({ onUploaded, onNotify }: Props) {
       const fd = new FormData();
       fd.append('file', selectedFile);
       const result = await api.uploadBatch(fd, forceRecrawl);
+      const invalidNote = result.invalidRows ? ` ${result.invalidRows} rows skipped (not valid domains).` : '';
       onNotify(
-        `Batch created! ${result.totalCompanies} companies (${result.jobsEnqueued} queued, ${result.skipped} cached).`,
-        'success',
+        `Batch created! ${result.totalCompanies} companies (${result.jobsEnqueued} queued, ${result.skipped} cached).${invalidNote}`,
+        result.invalidRows ? 'warning' : 'success',
       );
       setSelectedFile(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       onUploaded();
     } catch (err: unknown) {
-      onNotify(err instanceof Error ? err.message : String(err), 'error');
+      const msg = err instanceof Error ? err.message : String(err);
+      const localized = msg.includes('No valid domains') ? t.uploadNoDomains : msg;
+      onNotify(localized, 'error');
     } finally {
       setUploading(false);
     }

@@ -11,9 +11,10 @@ interface Props {
   onDelete: (id: string) => void;
   onView: (id: string, name: string) => void;
   onNotify: (msg: string, type: 'success' | 'error' | 'info' | 'warning') => void;
+  onReEnrich?: () => void;
 }
 
-export default function BatchTable({ batches, loading, onDelete, onView, onNotify }: Props) {
+export default function BatchTable({ batches, loading, onDelete, onView, onNotify, onReEnrich }: Props) {
   const { theme } = useTheme();
   const { t } = useLang();
   const isDark = theme === 'dark';
@@ -64,6 +65,7 @@ export default function BatchTable({ batches, loading, onDelete, onView, onNotif
                     onDelete={onDelete}
                     onView={onView}
                     onNotify={onNotify}
+                    onReEnrich={onReEnrich}
                   />
                 ))
               )}
