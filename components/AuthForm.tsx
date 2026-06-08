@@ -16,6 +16,7 @@ export default function AuthForm() {
   const [tenantName, setTenantName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [devVerifyUrl, setDevVerifyUrl] = useState<string | null>(null);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -41,7 +42,11 @@ export default function AuthForm() {
       const res = await api.register(email, password, tenantName);
       setToken(res.token);
       setUserEmail(res.user.email);
-      router.push('/dashboard?registered=true');
+      if (res.devVerificationUrl) {
+        setDevVerifyUrl(res.devVerificationUrl);
+      } else {
+        router.push('/dashboard?registered=true');
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -241,6 +246,55 @@ export default function AuthForm() {
               </form>
             )}
           </div>
+
+          {/* Dev-only verification box — never visible in production */}
+          {devVerifyUrl && (
+            <div className={`mt-4 p-5 rounded-xl border ${
+              isDark
+                ? 'bg-surface-container-low border-outline-variant/30'
+                : 'bg-amber-50 border-amber-200'
+            }`}>
+              <div className="flex items-start gap-3 mb-4">
+                <span className={`material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0 ${
+                  isDark ? 'text-secondary' : 'text-amber-600'
+                }`}>engineering</span>
+                <div>
+                  <p className={`text-[10px] font-bold uppercase tracking-[0.18em] mb-1 ${
+                    isDark ? 'text-secondary' : 'text-amber-600'
+                  }`}>Development mode only</p>
+                  <p className={`text-xs leading-relaxed ${
+                    isDark ? 'text-on-surface-variant' : 'text-amber-800'
+                  }`}>
+                    SMTP is not configured — no email was sent. Use this link to verify your account locally:
+                  </p>
+                </div>
+              </div>
+              <a
+                href={devVerifyUrl}
+                className={`inline-flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-lg transition-opacity hover:opacity-80 ${
+                  isDark
+                    ? 'bg-surface-container-highest text-white border border-outline-variant/20'
+                    : 'bg-amber-600 text-white'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[14px]">verified</span>
+                Verify email address
+              </a>
+              <button
+                onClick={() => router.push('/dashboard')}
+                className={`ml-3 text-xs underline underline-offset-2 transition-opacity hover:opacity-60 ${
+                  isDark ? 'text-on-surface-variant' : 'text-amber-600'
+                }`}
+              >
+                Skip for now
+              </button>
+              <p className={`text-[10px] mt-3 ${
+                isDark ? 'text-on-surface-variant/40' : 'text-amber-400'
+              }`}>
+                This box is never shown in production (NODE_ENV=production).
+              </p>
+            </div>
+          )}
         </div>
       </main>
 

@@ -101,4 +101,6 @@ export interface AuthResult {
     emailVerified: boolean;
     tenantId: string;
   };
+  /** Only present in development (NODE_ENV !== 'production' and EMAIL_HOST unset). Never in production. */
+  devVerificationUrl?: string;
 }
