@@ -96,11 +96,17 @@ export default function CompaniesModal({ batchId, batchName, isPersonaSearch, on
   function crawlStatusBadge(s: string) {
     const map: Record<string, string> = {
       COMPLETED: 'text-primary',
-      FAILED: 'text-error',
-      CRAWLING: 'text-secondary',
-      PENDING: 'text-on-surface-variant',
+      FAILED:    'text-error',
+      CRAWLING:  'text-secondary',
+      PENDING:   'text-on-surface-variant',
+      BLOCKED:   'text-amber-400',
     };
     return map[s] || 'text-on-surface-variant';
+  }
+
+  function crawlStatusLabel(s: string) {
+    if (s === 'BLOCKED') return 'Bot protected';
+    return s;
   }
 
   function candidateStatusStyle(s: DiscoveryCandidate['status']): string {
@@ -192,9 +198,17 @@ export default function CompaniesModal({ batchId, batchName, isPersonaSearch, on
           </div>
         </td>
         <td className="px-6 py-4">
-          <span className={`text-xs font-bold uppercase tracking-wide ${crawlStatusBadge(c.crawlStatus)}`}>
-            {c.crawlStatus}
-          </span>
+          <div className="space-y-0.5">
+            <span className={`text-xs font-bold uppercase tracking-wide ${crawlStatusBadge(c.crawlStatus)}`}>
+              {crawlStatusLabel(c.crawlStatus)}
+            </span>
+            {c.crawlStatus === 'BLOCKED' && (
+              <div className="flex items-center gap-1 text-[10px] text-amber-400/70">
+                <span className="material-symbols-outlined text-[11px]">shield</span>
+                Human verification
+              </div>
+            )}
+          </div>
         </td>
         <td className="px-6 py-4">
           <div className="flex items-center gap-2">

@@ -146,11 +146,19 @@ export default function BatchRow({ batch, onDelete, onView, onNotify, onReEnrich
       );
     }
     if (effectiveStatus === 'FAILED') {
+      const errorNote = batch.searchQuery?._errorNote;
       return (
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${isDark ? 'bg-error-container/30 text-error' : 'bg-red-100 text-red-700'}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-error' : 'bg-red-500'}`} />
-          {t.failed}
-        </span>
+        <div className="space-y-1">
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${isDark ? 'bg-error-container/30 text-error' : 'bg-red-100 text-red-700'}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-error' : 'bg-red-500'}`} />
+            {t.failed}
+          </span>
+          {errorNote && (
+            <p className={`text-[10px] leading-snug max-w-[180px] ${isDark ? 'text-on-surface-variant/70' : 'text-slate-400'}`}>
+              {errorNote}
+            </p>
+          )}
+        </div>
       );
     }
     return (

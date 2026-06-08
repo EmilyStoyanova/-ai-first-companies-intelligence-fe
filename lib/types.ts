@@ -32,7 +32,8 @@ export interface Company {
   id: string;
   domain: string;
   name?: string;
-  crawlStatus: 'PENDING' | 'CRAWLING' | 'COMPLETED' | 'FAILED';
+  crawlStatus: 'PENDING' | 'CRAWLING' | 'COMPLETED' | 'FAILED' | 'BLOCKED';
+  crawlNote?: string;
   lastCrawledAt?: string;
   profile?: CompanyProfile;
   personalizedContents?: PersonalizedContent[];
@@ -43,6 +44,7 @@ export interface SearchQuery {
   location: string;
   keywords?: string;
   maxResults?: number;
+  _errorNote?: string;
 }
 
 export interface Batch {

@@ -69,9 +69,18 @@ export default function CompanyDetailPanel({ company, onClose }: Props) {
 
   const statusColor: Record<string, string> = {
     COMPLETED: 'text-primary',
-    FAILED: 'text-error',
-    CRAWLING: 'text-secondary',
-    PENDING: 'text-on-surface-variant',
+    FAILED:    'text-error',
+    CRAWLING:  'text-secondary',
+    PENDING:   'text-on-surface-variant',
+    BLOCKED:   'text-amber-400',
+  };
+
+  const statusLabel: Record<string, string> = {
+    COMPLETED: 'COMPLETED',
+    FAILED:    'FAILED',
+    CRAWLING:  'CRAWLING',
+    PENDING:   'PENDING',
+    BLOCKED:   'Bot protected',
   };
 
   return (
@@ -102,7 +111,7 @@ export default function CompanyDetailPanel({ company, onClose }: Props) {
                   {company.domain}
                 </a>
                 <span className={`text-[10px] font-bold uppercase tracking-wide ${statusColor[company.crawlStatus] ?? 'text-on-surface-variant'}`}>
-                  {company.crawlStatus}
+                  {statusLabel[company.crawlStatus] ?? company.crawlStatus}
                 </span>
               </div>
             </div>
@@ -125,6 +134,19 @@ export default function CompanyDetailPanel({ company, onClose }: Props) {
 
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto">
+
+          {/* Bot-protection notice */}
+          {company.crawlStatus === 'BLOCKED' && (
+            <div className="mx-6 mt-5 px-4 py-3 rounded-lg border border-amber-400/20 bg-amber-400/5 flex items-start gap-3">
+              <span className="material-symbols-outlined text-[18px] text-amber-400 flex-shrink-0 mt-0.5">shield</span>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-amber-400 mb-1">Bot protection detected</p>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  {company.crawlNote || 'Site is protected by human verification. Automated crawling could not access the content.'}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Profile */}
           <Section title={t.reviewProfile} icon="apartment">
