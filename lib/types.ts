@@ -1,5 +1,5 @@
 export interface TeamMember {
-  name: string;
+  name?: string;
   position?: string;
   email?: string;
   linkedin?: string;
@@ -18,6 +18,11 @@ export interface CompanyProfile {
   history?: string;
   socialLinks: Record<string, string>;
   completionScore: number;
+  loginProtected?: boolean;
+  logoSourceUrl?: string;
+  companyNameFromLogo?: string;
+  sloganFromLogo?: string;
+  logoNameConfidence?: number;
 }
 
 export interface PersonalizedContent {

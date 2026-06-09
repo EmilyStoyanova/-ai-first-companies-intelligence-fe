@@ -148,6 +148,34 @@ export default function CompanyDetailPanel({ company, onClose }: Props) {
             </div>
           )}
 
+          {/* Login-protected site notice */}
+          {profile?.loginProtected && (
+            <div className="mx-6 mt-5 px-4 py-3 rounded-lg border border-blue-400/20 bg-blue-400/5 flex items-start gap-3">
+              <span className="material-symbols-outlined text-[18px] text-blue-400 flex-shrink-0 mt-0.5">lock</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-blue-400 mb-1">
+                  Login-protected site
+                </p>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Recovered company identity from visible branding / logo.
+                </p>
+                {profile.companyNameFromLogo && (
+                  <div className="mt-2 flex items-center gap-2 flex-wrap">
+                    <span className="text-sm text-white font-medium">{profile.companyNameFromLogo}</span>
+                    {!!profile.logoNameConfidence && profile.logoNameConfidence > 0 && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-400/15 text-blue-300 font-medium">
+                        {profile.logoNameConfidence}% confidence
+                      </span>
+                    )}
+                  </div>
+                )}
+                {profile.sloganFromLogo && (
+                  <p className="text-[11px] text-on-surface-variant/70 mt-1 italic">{profile.sloganFromLogo}</p>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Profile */}
           <Section title={t.reviewProfile} icon="apartment">
             <div className="space-y-3">
@@ -251,8 +279,10 @@ export default function CompanyDetailPanel({ company, onClose }: Props) {
                       <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-white leading-tight">{m.name}</div>
-                      {m.position && (
+                      <div className="text-sm font-medium text-white leading-tight">
+                        {m.name || m.position || '—'}
+                      </div>
+                      {m.name && m.position && (
                         <div className="text-xs text-on-surface-variant mt-0.5">{m.position}</div>
                       )}
                       <div className="flex items-center gap-3 mt-1 flex-wrap">

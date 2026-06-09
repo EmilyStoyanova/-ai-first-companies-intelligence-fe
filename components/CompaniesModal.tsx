@@ -131,21 +131,16 @@ export default function CompaniesModal({ batchId, batchName, isPersonaSearch, on
 
   function renderTeam(team: TeamMember[]) {
     if (!team.length) return <span className="text-on-surface-variant">—</span>;
+    const first = team[0];
+    const displayName = first.name || first.position || first.email || '—';
     return (
-      <div className="space-y-1">
-        {team.slice(0, 3).map((m, i) => (
-          <div key={i} className="text-xs leading-relaxed">
-            <span className="font-medium text-white">{m.name}</span>
-            {m.position && <span className="text-on-surface-variant"> · {m.position}</span>}
-            {m.email && (
-              <a href={`mailto:${m.email}`} className="block text-secondary text-[11px] hover:underline">
-                {m.email}
-              </a>
-            )}
-          </div>
-        ))}
-        {team.length > 3 && (
-          <span className="text-on-surface-variant text-[11px]">+{team.length - 3} more</span>
+      <div className="text-xs">
+        <span className="font-medium text-white">{displayName}</span>
+        {first.name && first.position && (
+          <span className="text-on-surface-variant"> — {first.position}</span>
+        )}
+        {team.length > 1 && (
+          <span className="text-on-surface-variant"> +{team.length - 1}</span>
         )}
       </div>
     );
