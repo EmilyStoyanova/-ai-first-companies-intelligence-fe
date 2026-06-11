@@ -1,4 +1,4 @@
-import type { AuthResult, Batch, DiscoveryCandidate, PaginatedCompanies, PersonaSearchResult, UploadResult } from './types';
+import type { AuthResult, Batch, DiscoveryCandidate, PaginatedCompanies, PersonaSearchResult, TenantProfile, UploadResult } from './types';
 
 const API_BASE = '/api';
 
@@ -76,8 +76,18 @@ export const api = {
   login: (email: string, password: string) =>
     request<AuthResult>('POST', '/auth/login', { email, password }),
 
-  register: (email: string, password: string, tenantName: string) =>
-    request<AuthResult>('POST', '/auth/register', { email, password, tenantName }),
+  register: (
+    email: string,
+    password: string,
+    tenantName: string,
+    extra?: {
+      website?: string;
+      contactPersonName?: string;
+      contactPersonTitle?: string;
+      contactPersonPhone?: string;
+    },
+  ) =>
+    request<AuthResult>('POST', '/auth/register', { email, password, tenantName, ...extra }),
 
   listBatches: () => request<Batch[]>('GET', '/batches'),
 
@@ -118,4 +128,10 @@ export const api = {
       `/batches/${batchId}/candidates/${encodeURIComponent(domain)}`,
       { action },
     ),
+
+  getTenantProfile: () =>
+    request<TenantProfile>('GET', '/tenant/profile'),
+
+  updateTenantProfile: (data: Partial<TenantProfile>) =>
+    request<TenantProfile>('PUT', '/tenant/profile', data),
 };

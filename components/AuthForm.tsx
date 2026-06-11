@@ -14,6 +14,10 @@ export default function AuthForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [tenantName, setTenantName] = useState('');
+  const [website, setWebsite] = useState('');
+  const [contactPersonName, setContactPersonName] = useState('');
+  const [contactPersonTitle, setContactPersonTitle] = useState('');
+  const [contactPersonPhone, setContactPersonPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [devVerifyUrl, setDevVerifyUrl] = useState<string | null>(null);
@@ -39,7 +43,12 @@ export default function AuthForm() {
     setError('');
     setLoading(true);
     try {
-      const res = await api.register(email, password, tenantName);
+      const res = await api.register(email, password, tenantName, {
+        website:            website            || undefined,
+        contactPersonName:  contactPersonName  || undefined,
+        contactPersonTitle: contactPersonTitle || undefined,
+        contactPersonPhone: contactPersonPhone || undefined,
+      });
       setToken(res.token);
       setUserEmail(res.user.email);
       if (res.devVerificationUrl) {
@@ -185,7 +194,7 @@ export default function AuthForm() {
                     onChange={(e) => setTenantName(e.target.value)}
                     required
                     autoFocus
-                    placeholder="Acme Corp"
+                    placeholder={t.tenantNamePlaceholder}
                     className={`w-full border-0 border-b focus:ring-0 py-3 px-0 transition-all placeholder:opacity-40 text-sm ${
                       isDark
                         ? 'bg-surface-container-low border-outline-variant/30 focus:border-primary text-white placeholder:text-outline'
@@ -228,6 +237,82 @@ export default function AuthForm() {
                     }`}
                   />
                 </div>
+                {/* Sender profile section */}
+                <div className={`pt-2 border-t ${isDark ? 'border-outline-variant/20' : 'border-slate-100'}`}>
+                  <p className={`text-[10px] uppercase tracking-[0.2em] font-bold mb-6 ${isDark ? 'text-on-surface-variant/60' : 'text-slate-400'}`}>
+                    {t.senderSection}
+                  </p>
+                  <div className="space-y-6">
+                    <div className="space-y-1 group/input">
+                      <label className={`block text-[10px] uppercase tracking-[0.2em] font-bold transition-colors group-focus-within/input:text-primary ${isDark ? 'text-on-surface-variant' : 'text-slate-500'}`}>
+                        {t.contactPersonName} <span className={isDark ? 'text-error/70' : 'text-red-400'}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={contactPersonName}
+                        onChange={(e) => setContactPersonName(e.target.value)}
+                        required
+                        placeholder={t.contactPersonNamePlaceholder}
+                        className={`w-full border-0 border-b focus:ring-0 py-3 px-0 transition-all placeholder:opacity-40 text-sm ${
+                          isDark
+                            ? 'bg-surface-container-low border-outline-variant/30 focus:border-primary text-white placeholder:text-outline'
+                            : 'bg-white border-slate-200 focus:border-slate-900 text-slate-900 placeholder:text-slate-400'
+                        }`}
+                      />
+                    </div>
+                    <div className="space-y-1 group/input">
+                      <label className={`block text-[10px] uppercase tracking-[0.2em] font-bold transition-colors group-focus-within/input:text-primary ${isDark ? 'text-on-surface-variant' : 'text-slate-500'}`}>
+                        {t.contactPersonTitle}
+                      </label>
+                      <input
+                        type="text"
+                        value={contactPersonTitle}
+                        onChange={(e) => setContactPersonTitle(e.target.value)}
+                        placeholder={t.contactPersonTitlePlaceholder}
+                        className={`w-full border-0 border-b focus:ring-0 py-3 px-0 transition-all placeholder:opacity-40 text-sm ${
+                          isDark
+                            ? 'bg-surface-container-low border-outline-variant/30 focus:border-primary text-white placeholder:text-outline'
+                            : 'bg-white border-slate-200 focus:border-slate-900 text-slate-900 placeholder:text-slate-400'
+                        }`}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1 group/input">
+                        <label className={`block text-[10px] uppercase tracking-[0.2em] font-bold transition-colors group-focus-within/input:text-primary ${isDark ? 'text-on-surface-variant' : 'text-slate-500'}`}>
+                          {t.companyWebsite}
+                        </label>
+                        <input
+                          type="text"
+                          value={website}
+                          onChange={(e) => setWebsite(e.target.value)}
+                          placeholder={t.companyWebsitePlaceholder}
+                          className={`w-full border-0 border-b focus:ring-0 py-3 px-0 transition-all placeholder:opacity-40 text-sm ${
+                            isDark
+                              ? 'bg-surface-container-low border-outline-variant/30 focus:border-primary text-white placeholder:text-outline'
+                              : 'bg-white border-slate-200 focus:border-slate-900 text-slate-900 placeholder:text-slate-400'
+                          }`}
+                        />
+                      </div>
+                      <div className="space-y-1 group/input">
+                        <label className={`block text-[10px] uppercase tracking-[0.2em] font-bold transition-colors group-focus-within/input:text-primary ${isDark ? 'text-on-surface-variant' : 'text-slate-500'}`}>
+                          {t.contactPersonPhone}
+                        </label>
+                        <input
+                          type="tel"
+                          value={contactPersonPhone}
+                          onChange={(e) => setContactPersonPhone(e.target.value)}
+                          placeholder={t.contactPersonPhonePlaceholder}
+                          className={`w-full border-0 border-b focus:ring-0 py-3 px-0 transition-all placeholder:opacity-40 text-sm ${
+                            isDark
+                              ? 'bg-surface-container-low border-outline-variant/30 focus:border-primary text-white placeholder:text-outline'
+                              : 'bg-white border-slate-200 focus:border-slate-900 text-slate-900 placeholder:text-slate-400'
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="flex items-start gap-3 py-2">
                   <span className={`material-symbols-outlined text-sm mt-0.5 ${isDark ? 'text-secondary' : 'text-slate-400'}`}>info</span>
                   <p className={`text-[11px] leading-relaxed italic ${isDark ? 'text-on-surface-variant/80' : 'text-slate-400'}`}>

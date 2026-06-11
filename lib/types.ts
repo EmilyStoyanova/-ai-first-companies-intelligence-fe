@@ -100,6 +100,15 @@ export interface DiscoveryCandidate {
   createdAt: string;
 }
 
+export interface TenantProfile {
+  name: string;
+  website: string | null;
+  contactPersonName: string | null;
+  contactPersonTitle: string | null;
+  contactPersonEmail: string | null;
+  contactPersonPhone: string | null;
+}
+
 export interface AuthResult {
   token: string;
   user: {

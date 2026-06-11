@@ -55,6 +55,14 @@ export default function Header() {
         <div className={`h-6 w-px ${isDark ? 'bg-outline-variant/20' : 'bg-slate-200'}`} />
 
         <button
+          onClick={() => router.push('/settings')}
+          className={`p-2 rounded-full transition-all duration-300 active:scale-95 ${isDark ? 'text-on-surface-variant hover:bg-surface-container-high hover:text-white' : 'text-slate-500 hover:bg-slate-200 hover:text-slate-900'}`}
+          title={t.settings}
+        >
+          <span className="material-symbols-outlined text-[20px]">settings</span>
+        </button>
+
+        <button
           onClick={logout}
           className={`font-medium text-sm transition-colors duration-100 ${isDark ? 'text-white hover:text-secondary' : 'text-slate-700 hover:text-slate-900'}`}
         >

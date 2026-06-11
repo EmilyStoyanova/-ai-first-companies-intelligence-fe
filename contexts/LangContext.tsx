@@ -16,7 +16,8 @@ const translations = {
     register: "Регистрация",
     email: "Имейл",
     password: "Парола",
-    tenantName: "Организация",
+    tenantName: "Име на фирмата",
+    tenantNamePlaceholder: "напр. Людогорие Софт",
     signIn: "Влезте",
     createAccount: "Създайте акаунт",
     signingIn: "Влизане…",
@@ -136,6 +137,25 @@ const translations = {
     // Language toggle
     langToggle: "EN",
 
+    // Settings / tenant profile
+    settings: "Настройки",
+    settingsTitle: "Профил за имейл кампании",
+    settingsSubtitle: "Тези данни се използват като подател на персонализираните B2B писма.",
+    settingsSave: "Запази",
+    settingsSaving: "Запазване…",
+    settingsSaved: "Настройките са запазени.",
+    settingsFailed: "Грешка при запазване.",
+    companyWebsite: "Уебсайт на фирмата",
+    companyWebsitePlaceholder: "напр. https://ludogoriesoft.com",
+    contactPersonName: "Име и фамилия",
+    contactPersonNamePlaceholder: "напр. Севделин Димитров",
+    contactPersonTitle: "Позиция",
+    contactPersonTitlePlaceholder: "напр. Търговски директор",
+    contactPersonPhone: "Телефон",
+    contactPersonPhonePlaceholder: "напр. +359 887 810 738",
+    senderSection: "Данни за подател",
+    accountSection: "Акаунт",
+
     // Review panel
     reviewProfile: "Профил",
     reviewContact: "Контакти",
@@ -169,7 +189,8 @@ const translations = {
     register: "Register",
     email: "Email",
     password: "Password",
-    tenantName: "Organization Name",
+    tenantName: "Company Name",
+    tenantNamePlaceholder: "e.g. Acme Corp",
     signIn: "Sign In",
     createAccount: "Create Account",
     signingIn: "Signing in…",
@@ -287,6 +308,25 @@ const translations = {
 
     // Language toggle
     langToggle: "БГ",
+
+    // Settings / tenant profile
+    settings: "Settings",
+    settingsTitle: "Campaign Email Profile",
+    settingsSubtitle: "These details are used as the sender of personalized B2B outreach emails.",
+    settingsSave: "Save",
+    settingsSaving: "Saving…",
+    settingsSaved: "Settings saved.",
+    settingsFailed: "Failed to save settings.",
+    companyWebsite: "Website",
+    companyWebsitePlaceholder: "e.g. https://ludogoriesoft.com",
+    contactPersonName: "Full Name",
+    contactPersonNamePlaceholder: "e.g. John Smith",
+    contactPersonTitle: "Position",
+    contactPersonTitlePlaceholder: "e.g. Sales Director",
+    contactPersonPhone: "Phone",
+    contactPersonPhonePlaceholder: "e.g. +359 887 810 738",
+    senderSection: "Sender Details",
+    accountSection: "Account",
 
     // Review panel
     reviewProfile: "Profile",
