@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import type { EmailTemplate } from '@/lib/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLang } from '@/contexts/LangContext';
 
@@ -22,6 +23,12 @@ export default function PersonaSearchCard({ onSearched, onNotify }: Props) {
   const [keywords, setKeywords] = useState('');
   const [maxResults, setMaxResults] = useState(20);
   const [searching, setSearching] = useState(false);
+  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+
+  useEffect(() => {
+    api.listTemplates().then(setTemplates).catch(() => {});
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -34,6 +41,7 @@ export default function PersonaSearchCard({ onSearched, onNotify }: Props) {
         location: location.trim(),
         keywords: keywords.trim() || undefined,
         maxResults,
+        templateId: selectedTemplateId || undefined,
       });
       onNotify(t.searchSuccess, 'success');
       setPersona('');
@@ -152,7 +160,26 @@ export default function PersonaSearchCard({ onSearched, onNotify }: Props) {
                 />
               </div>
 
-              {/* Row 3: maxResults + submit */}
+              {/* Row 3: template selector */}
+              {templates.length > 0 && (
+                <div>
+                  <label className={labelBase}>{t.templateSelectLabel}</label>
+                  <select
+                    value={selectedTemplateId}
+                    onChange={(e) => setSelectedTemplateId(e.target.value)}
+                    className={inputBase}
+                  >
+                    <option value="">{t.templateDefault}</option>
+                    {templates.map((tmpl) => (
+                      <option key={tmpl.id} value={tmpl.id}>
+                        {tmpl.name}{tmpl.isDefault ? ` (${t.templateDefaultBadge})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Row 4: maxResults + submit */}
               <div className="flex flex-wrap items-end gap-5 pt-2">
                 <div className="flex-shrink-0">
                   <label className={labelBase}>{t.maxResultsLabel}</label>

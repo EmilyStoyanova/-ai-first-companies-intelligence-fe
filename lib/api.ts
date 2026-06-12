@@ -1,4 +1,4 @@
-import type { AuthResult, Batch, DiscoveryCandidate, PaginatedCompanies, PersonaSearchResult, TenantProfile, UploadResult } from './types';
+import type { AuthResult, Batch, DiscoveryCandidate, EmailTemplate, PaginatedCompanies, PersonaSearchResult, TenantProfile, UploadResult } from './types';
 
 const API_BASE = '/api';
 
@@ -96,13 +96,15 @@ export const api = {
   getCompanies: (batchId: string, page: number = 1) =>
     request<PaginatedCompanies>('GET', `/batches/${batchId}/companies?page=${page}&limit=50`),
 
-  uploadBatch: (formData: FormData, forceRecrawl: boolean) =>
-    request<UploadResult>(
+  uploadBatch: (formData: FormData, forceRecrawl: boolean, templateId?: string) => {
+    if (templateId) formData.append('templateId', templateId);
+    return request<UploadResult>(
       'POST',
       `/batches/upload${forceRecrawl ? '?force_recrawl=true' : ''}`,
       formData,
       true,
-    ),
+    );
+  },
 
   downloadBatch: (id: string, format: 'csv' | 'xlsx') =>
     request<Response>('GET', `/batches/${id}/download?format=${format}`),
@@ -117,6 +119,7 @@ export const api = {
     location: string;
     keywords?: string;
     maxResults?: number;
+    templateId?: string;
   }) => request<PersonaSearchResult>('POST', '/persona-searches', params),
 
   getCandidates: (batchId: string) =>
@@ -134,4 +137,19 @@ export const api = {
 
   updateTenantProfile: (data: Partial<TenantProfile>) =>
     request<TenantProfile>('PUT', '/tenant/profile', data),
+
+  listTemplates: () =>
+    request<EmailTemplate[]>('GET', '/templates'),
+
+  createTemplate: (data: { name: string; subject: string; body: string; isDefault?: boolean }) =>
+    request<EmailTemplate>('POST', '/templates', data),
+
+  updateTemplate: (id: string, data: { name?: string; subject?: string; body?: string; isDefault?: boolean }) =>
+    request<EmailTemplate>('PUT', `/templates/${id}`, data),
+
+  deleteTemplate: (id: string) =>
+    request<void>('DELETE', `/templates/${id}`),
+
+  setDefaultTemplate: (id: string) =>
+    request<EmailTemplate>('PUT', `/templates/${id}/default`, {}),
 };

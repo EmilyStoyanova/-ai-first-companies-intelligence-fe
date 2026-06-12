@@ -109,6 +109,17 @@ export interface TenantProfile {
   contactPersonPhone: string | null;
 }
 
+export interface EmailTemplate {
+  id: string;
+  tenantId: string;
+  name: string;
+  subject: string;
+  body: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AuthResult {
   token: string;
   user: {

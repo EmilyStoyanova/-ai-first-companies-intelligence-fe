@@ -9,6 +9,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import Header from './Header';
 import UploadCard from './UploadCard';
 import PersonaSearchCard from './PersonaSearchCard';
+import TemplatesCard from './TemplatesCard';
 import BatchTable from './BatchTable';
 import CompaniesModal from './CompaniesModal';
 
@@ -35,7 +36,7 @@ export default function Dashboard() {
   const [modalBatchName, setModalBatchName] = useState('');
   const [modalIsPersonaSearch, setModalIsPersonaSearch] = useState(false);
   const [banner, setBanner] = useState<{ msg: string; type: string } | null>(null);
-  const [activeTab, setActiveTab] = useState<'upload' | 'persona'>('upload');
+  const [activeTab, setActiveTab] = useState<'upload' | 'persona' | 'templates'>('upload');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -199,13 +200,24 @@ export default function Dashboard() {
               {t.personaTab}
             </span>
           </button>
+          <button
+            onClick={() => setActiveTab('templates')}
+            className={`px-5 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all duration-200 ${
+              activeTab === 'templates'
+                ? isDark ? 'bg-surface-container-highest text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm'
+                : isDark ? 'text-on-surface-variant hover:text-white' : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[16px]">mail</span>
+              {t.templatesTab}
+            </span>
+          </button>
         </div>
 
-        {activeTab === 'upload' ? (
-          <UploadCard onUploaded={handleUploaded} onNotify={notify} />
-        ) : (
-          <PersonaSearchCard onSearched={handleUploaded} onNotify={notify} />
-        )}
+        {activeTab === 'upload' && <UploadCard onUploaded={handleUploaded} onNotify={notify} />}
+        {activeTab === 'persona' && <PersonaSearchCard onSearched={handleUploaded} onNotify={notify} />}
+        {activeTab === 'templates' && <TemplatesCard onNotify={notify} />}
 
         <BatchTable
           batches={batches}

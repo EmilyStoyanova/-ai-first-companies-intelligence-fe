@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
+import type { EmailTemplate } from '@/lib/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLang } from '@/contexts/LangContext';
 
@@ -19,6 +20,12 @@ export default function UploadCard({ onUploaded, onNotify }: Props) {
   const [forceRecrawl, setForceRecrawl] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isDragover, setIsDragover] = useState(false);
+  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+
+  useEffect(() => {
+    api.listTemplates().then(setTemplates).catch(() => {});
+  }, []);
 
   function handleFile(file: File) {
     const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
@@ -46,7 +53,7 @@ export default function UploadCard({ onUploaded, onNotify }: Props) {
     try {
       const fd = new FormData();
       fd.append('file', selectedFile);
-      const result = await api.uploadBatch(fd, forceRecrawl);
+      const result = await api.uploadBatch(fd, forceRecrawl, selectedTemplateId || undefined);
       const invalidNote = result.invalidRows ? ` ${result.invalidRows} rows skipped (not valid domains).` : '';
       onNotify(
         `Batch created! ${result.totalCompanies} companies (${result.jobsEnqueued} queued, ${result.skipped} cached).${invalidNote}`,
@@ -144,6 +151,27 @@ export default function UploadCard({ onUploaded, onNotify }: Props) {
                 <span className="material-symbols-outlined text-base">check_circle</span> {t.contacts}
               </span>
             </div>
+
+            {/* Template selector */}
+            {templates.length > 0 && (
+              <div className="text-left">
+                <label className={`block text-xs font-bold uppercase tracking-wide mb-1.5 ${isDark ? 'text-on-surface-variant' : 'text-slate-500'}`}>
+                  {t.templateSelectLabel}
+                </label>
+                <select
+                  value={selectedTemplateId}
+                  onChange={(e) => setSelectedTemplateId(e.target.value)}
+                  className={`w-full px-4 py-2.5 rounded-lg text-sm border transition-colors outline-none ${isDark ? 'bg-surface-container border-outline-variant/30 text-white focus:border-primary/60' : 'bg-white border-slate-200 text-slate-900 focus:border-slate-400'}`}
+                >
+                  <option value="">{t.templateDefault}</option>
+                  {templates.map((tmpl) => (
+                    <option key={tmpl.id} value={tmpl.id}>
+                      {tmpl.name}{tmpl.isDefault ? ` (${t.templateDefaultBadge})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="flex items-center justify-center gap-4 flex-wrap pt-2">
