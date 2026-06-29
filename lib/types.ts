@@ -127,7 +127,18 @@ export interface AuthResult {
     email: string;
     emailVerified: boolean;
     tenantId: string;
+    role?: string;
   };
   /** Only present in development (NODE_ENV !== 'production' and EMAIL_HOST unset). Never in production. */
   devVerificationUrl?: string;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  role: 'USER' | 'ADMIN';
+  monthlyDomainLimit: number | null;
+  createdAt: string;
+  tenantId: string;
+  domainsUsedThisMonth: number;
 }

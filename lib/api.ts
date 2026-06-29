@@ -1,4 +1,4 @@
-import type { AuthResult, Batch, DiscoveryCandidate, EmailTemplate, PaginatedCompanies, PersonaSearchResult, TenantProfile, UploadResult } from './types';
+import type { AdminUser, AuthResult, Batch, DiscoveryCandidate, EmailTemplate, PaginatedCompanies, PersonaSearchResult, TenantProfile, UploadResult } from './types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
 
@@ -18,6 +18,18 @@ export function setUserEmail(email: string): void {
 export function clearAuth(): void {
   localStorage.removeItem('token');
   localStorage.removeItem('userEmail');
+}
+
+export function getUserRole(): string {
+  if (typeof window === 'undefined') return 'USER';
+  const token = localStorage.getItem('token');
+  if (!token) return 'USER';
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return (payload.role as string) || 'USER';
+  } catch {
+    return 'USER';
+  }
 }
 
 export function getUserEmail(): string {
@@ -152,4 +164,14 @@ export const api = {
 
   setDefaultTemplate: (id: string) =>
     request<EmailTemplate>('PUT', `/templates/${id}/default`, {}),
+
+  listAdminUsers: () =>
+    request<AdminUser[]>('GET', '/admin/users'),
+
+  updateAdminUser: (id: string, data: { role?: 'USER' | 'ADMIN'; monthlyDomainLimit?: number | null }) =>
+    request<{ id: string; email: string; role: string; monthlyDomainLimit: number | null }>(
+      'PATCH',
+      `/admin/users/${id}`,
+      data,
+    ),
 };

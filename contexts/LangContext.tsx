@@ -204,6 +204,25 @@ const translations = {
     reviewCopied: "Копирано!",
     reviewNoData: "Няма данни",
     reviewPosition: "Позиция",
+
+    // Admin panel
+    adminNav: "Администрация",
+    adminTitle: "Управление на потребители",
+    adminEmail: "Имейл",
+    adminRole: "Роля",
+    adminMonthlyLimit: "Месечен лимит",
+    adminUsedThisMonth: "Използвани",
+    adminRemaining: "Оставащи",
+    adminActions: "Действия",
+    adminUnlimited: "Неограничен",
+    adminSave: "Запази",
+    adminCancel: "Отказ",
+    adminEdit: "Редактирай",
+    adminSaved: "Запазено.",
+    adminSaveFailed: "Грешка при запазване.",
+    adminAccessDenied: "Нямате достъп до тази страница.",
+    adminLoading: "Зареждане на потребители…",
+    monthlyLimitExceeded: "Достигнахте месечния лимит на домейни. Свържете се с администратора за повече капацитет.",
   },
   en: {
     // App
@@ -403,6 +422,25 @@ const translations = {
     reviewCopied: "Copied!",
     reviewNoData: "No data",
     reviewPosition: "Position",
+
+    // Admin panel
+    adminNav: "Admin",
+    adminTitle: "User Management",
+    adminEmail: "Email",
+    adminRole: "Role",
+    adminMonthlyLimit: "Monthly Limit",
+    adminUsedThisMonth: "Used This Month",
+    adminRemaining: "Remaining",
+    adminActions: "Actions",
+    adminUnlimited: "Unlimited",
+    adminSave: "Save",
+    adminCancel: "Cancel",
+    adminEdit: "Edit",
+    adminSaved: "Saved.",
+    adminSaveFailed: "Failed to save.",
+    adminAccessDenied: "You don't have access to this page.",
+    adminLoading: "Loading users…",
+    monthlyLimitExceeded: "You have reached your monthly domain limit. Please contact your administrator if you need additional capacity.",
   },
 } as const;
 
