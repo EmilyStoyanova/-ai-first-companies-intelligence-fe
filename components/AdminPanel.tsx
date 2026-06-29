@@ -7,6 +7,9 @@ import type { AdminUser } from '@/lib/types';
 import { useLang } from '@/contexts/LangContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import Header from './Header';
+import AuditLogPanel from './AuditLogPanel';
+
+type Tab = 'users' | 'audit-log';
 
 interface EditState {
   role: 'USER' | 'ADMIN';
@@ -20,6 +23,7 @@ export default function AdminPanel() {
   const router = useRouter();
   const isDark = theme === 'dark';
 
+  const [tab, setTab] = useState<Tab>('users');
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -70,7 +74,11 @@ export default function AdminPanel() {
       setBanner({ msg: t.adminSaved, type: 'success' });
       setTimeout(() => setBanner(null), 3000);
     } catch (err: unknown) {
-      setBanner({ msg: err instanceof Error ? err.message : t.adminSaveFailed, type: 'error' });
+      const raw = err instanceof Error ? err.message : t.adminSaveFailed;
+      const msg = raw === 'The system must always have at least one administrator.'
+        ? t.adminLastAdminError
+        : raw;
+      setBanner({ msg, type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -139,127 +147,154 @@ export default function AdminPanel() {
       <Header />
 
       <main className="pt-28 pb-16 px-6 max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className={`font-headline font-bold text-2xl tracking-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+        <div className="mb-6">
+          <h1 className={`font-headline font-bold text-2xl tracking-tight mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {t.adminTitle}
           </h1>
+
+          {/* Tabs */}
+          <div className={`flex gap-1 p-1 rounded-lg w-fit ${isDark ? 'bg-surface-container' : 'bg-slate-100'}`}>
+            {(['users', 'audit-log'] as Tab[]).map((t_) => (
+              <button
+                key={t_}
+                onClick={() => setTab(t_)}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  tab === t_
+                    ? isDark
+                      ? 'bg-surface-container-high text-white shadow-sm'
+                      : 'bg-white text-slate-900 shadow-sm'
+                    : isDark
+                    ? 'text-on-surface-variant hover:text-white'
+                    : 'text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                {t_ === 'users' ? t.adminTabUsers : t.adminTabAuditLog}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {banner && (
-          <div className={`mb-6 px-4 py-3 rounded text-sm border ${
-            banner.type === 'success'
-              ? isDark ? 'bg-surface-container border-outline-variant/20 text-white' : 'bg-green-50 border-green-200 text-green-800'
-              : isDark ? 'bg-error-container/30 border-error/20 text-error' : 'bg-red-50 border-red-200 text-red-800'
-          }`}>
-            {banner.msg}
-          </div>
+        {tab === 'users' && (
+          <>
+            {banner && (
+              <div className={`mb-6 px-4 py-3 rounded text-sm border ${
+                banner.type === 'success'
+                  ? isDark ? 'bg-surface-container border-outline-variant/20 text-white' : 'bg-green-50 border-green-200 text-green-800'
+                  : isDark ? 'bg-error-container/30 border-error/20 text-error' : 'bg-red-50 border-red-200 text-red-800'
+              }`}>
+                {banner.msg}
+              </div>
+            )}
+
+            <div className={cardCls}>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className={`border-b ${isDark ? 'border-outline-variant/20' : 'border-slate-100'}`}>
+                      <th className={thCls}>{t.adminEmail}</th>
+                      <th className={thCls}>{t.adminRole}</th>
+                      <th className={thCls}>{t.adminMonthlyLimit}</th>
+                      <th className={thCls}>{t.adminUsedThisMonth}</th>
+                      <th className={thCls}>{t.adminRemaining}</th>
+                      <th className={thCls}>{t.adminActions}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((user, i) => {
+                      const isEditing = editingId === user.id;
+                      const rowBorder = i < users.length - 1
+                        ? `border-b ${isDark ? 'border-outline-variant/10' : 'border-slate-50'}`
+                        : '';
+
+                      return (
+                        <tr key={user.id} className={rowBorder}>
+                          <td className={`${tdCls} font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {user.email}
+                          </td>
+
+                          {isEditing ? (
+                            <>
+                              <td className="px-4 py-2">
+                                <select
+                                  value={editState.role}
+                                  onChange={(e) => setEditState((s) => ({ ...s, role: e.target.value as 'USER' | 'ADMIN' }))}
+                                  className={selectCls}
+                                >
+                                  <option value="USER">USER</option>
+                                  <option value="ADMIN">ADMIN</option>
+                                </select>
+                              </td>
+                              <td className="px-4 py-2">
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    disabled={editState.unlimited}
+                                    value={editState.limit}
+                                    onChange={(e) => setEditState((s) => ({ ...s, limit: e.target.value }))}
+                                    placeholder="0"
+                                    className={`w-24 ${inputCls} disabled:opacity-40`}
+                                  />
+                                  <label className={`flex items-center gap-1 text-xs whitespace-nowrap cursor-pointer select-none ${isDark ? 'text-on-surface-variant' : 'text-slate-500'}`}>
+                                    <input
+                                      type="checkbox"
+                                      checked={editState.unlimited}
+                                      onChange={(e) => setEditState((s) => ({ ...s, unlimited: e.target.checked, limit: e.target.checked ? '' : s.limit }))}
+                                      className="accent-primary"
+                                    />
+                                    {t.adminUnlimited}
+                                  </label>
+                                </div>
+                              </td>
+                              <td className={tdCls}>{user.domainsUsedThisMonth}</td>
+                              <td className={tdCls}>—</td>
+                              <td className="px-4 py-2">
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => saveEdit(user.id)}
+                                    disabled={saving || (!editState.unlimited && (editState.limit === '' || Number(editState.limit) < 0))}
+                                    className={`${btnPrimary} disabled:opacity-50`}
+                                  >
+                                    {saving ? '…' : t.adminSave}
+                                  </button>
+                                  <button onClick={cancelEdit} className={btnSecondary} disabled={saving}>
+                                    {t.adminCancel}
+                                  </button>
+                                </div>
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="px-4 py-3">
+                                <span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                  user.role === 'ADMIN'
+                                    ? isDark ? 'bg-primary/20 text-primary' : 'bg-indigo-100 text-indigo-700'
+                                    : isDark ? 'bg-outline-variant/20 text-on-surface-variant' : 'bg-slate-100 text-slate-600'
+                                }`}>
+                                  {user.role}
+                                </span>
+                              </td>
+                              <td className={tdCls}>{limitDisplay(user)}</td>
+                              <td className={tdCls}>{user.domainsUsedThisMonth}</td>
+                              <td className={tdCls}>{remainingDisplay(user)}</td>
+                              <td className="px-4 py-3">
+                                <button onClick={() => startEdit(user)} className={btnSecondary}>
+                                  {t.adminEdit}
+                                </button>
+                              </td>
+                            </>
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
         )}
 
-        <div className={cardCls}>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className={`border-b ${isDark ? 'border-outline-variant/20' : 'border-slate-100'}`}>
-                  <th className={thCls}>{t.adminEmail}</th>
-                  <th className={thCls}>{t.adminRole}</th>
-                  <th className={thCls}>{t.adminMonthlyLimit}</th>
-                  <th className={thCls}>{t.adminUsedThisMonth}</th>
-                  <th className={thCls}>{t.adminRemaining}</th>
-                  <th className={thCls}>{t.adminActions}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user, i) => {
-                  const isEditing = editingId === user.id;
-                  const rowBorder = i < users.length - 1
-                    ? `border-b ${isDark ? 'border-outline-variant/10' : 'border-slate-50'}`
-                    : '';
-
-                  return (
-                    <tr key={user.id} className={rowBorder}>
-                      <td className={`${tdCls} font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        {user.email}
-                      </td>
-
-                      {isEditing ? (
-                        <>
-                          <td className="px-4 py-2">
-                            <select
-                              value={editState.role}
-                              onChange={(e) => setEditState((s) => ({ ...s, role: e.target.value as 'USER' | 'ADMIN' }))}
-                              className={selectCls}
-                            >
-                              <option value="USER">USER</option>
-                              <option value="ADMIN">ADMIN</option>
-                            </select>
-                          </td>
-                          <td className="px-4 py-2">
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="number"
-                                min={0}
-                                disabled={editState.unlimited}
-                                value={editState.limit}
-                                onChange={(e) => setEditState((s) => ({ ...s, limit: e.target.value }))}
-                                placeholder="0"
-                                className={`w-24 ${inputCls} disabled:opacity-40`}
-                              />
-                              <label className={`flex items-center gap-1 text-xs whitespace-nowrap cursor-pointer select-none ${isDark ? 'text-on-surface-variant' : 'text-slate-500'}`}>
-                                <input
-                                  type="checkbox"
-                                  checked={editState.unlimited}
-                                  onChange={(e) => setEditState((s) => ({ ...s, unlimited: e.target.checked, limit: e.target.checked ? '' : s.limit }))}
-                                  className="accent-primary"
-                                />
-                                {t.adminUnlimited}
-                              </label>
-                            </div>
-                          </td>
-                          <td className={tdCls}>{user.domainsUsedThisMonth}</td>
-                          <td className={tdCls}>—</td>
-                          <td className="px-4 py-2">
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => saveEdit(user.id)}
-                                disabled={saving || (!editState.unlimited && (editState.limit === '' || Number(editState.limit) < 0))}
-                                className={`${btnPrimary} disabled:opacity-50`}
-                              >
-                                {saving ? '…' : t.adminSave}
-                              </button>
-                              <button onClick={cancelEdit} className={btnSecondary} disabled={saving}>
-                                {t.adminCancel}
-                              </button>
-                            </div>
-                          </td>
-                        </>
-                      ) : (
-                        <>
-                          <td className="px-4 py-3">
-                            <span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full ${
-                              user.role === 'ADMIN'
-                                ? isDark ? 'bg-primary/20 text-primary' : 'bg-indigo-100 text-indigo-700'
-                                : isDark ? 'bg-outline-variant/20 text-on-surface-variant' : 'bg-slate-100 text-slate-600'
-                            }`}>
-                              {user.role}
-                            </span>
-                          </td>
-                          <td className={tdCls}>{limitDisplay(user)}</td>
-                          <td className={tdCls}>{user.domainsUsedThisMonth}</td>
-                          <td className={tdCls}>{remainingDisplay(user)}</td>
-                          <td className="px-4 py-3">
-                            <button onClick={() => startEdit(user)} className={btnSecondary}>
-                              {t.adminEdit}
-                            </button>
-                          </td>
-                        </>
-                      )}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {tab === 'audit-log' && <AuditLogPanel />}
       </main>
     </div>
   );

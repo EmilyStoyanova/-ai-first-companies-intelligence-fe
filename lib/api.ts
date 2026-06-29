@@ -1,4 +1,4 @@
-import type { AdminUser, AuthResult, Batch, DiscoveryCandidate, EmailTemplate, PaginatedCompanies, PersonaSearchResult, TenantProfile, UploadResult } from './types';
+import type { AdminUser, AuthResult, Batch, DiscoveryCandidate, EmailTemplate, PaginatedAuditLog, PaginatedCompanies, PersonaSearchResult, TenantProfile, UploadResult } from './types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
 
@@ -174,4 +174,23 @@ export const api = {
       `/admin/users/${id}`,
       data,
     ),
+
+  getAuditLog: (params: {
+    page?: number;
+    limit?: number;
+    adminEmail?: string;
+    targetEmail?: string;
+    action?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    order?: 'asc' | 'desc';
+  } = {}) => {
+    const q = new URLSearchParams();
+    (Object.entries(params) as [string, string | number | undefined][]).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') q.set(k, String(v));
+    });
+    const qs = q.toString();
+    return request<PaginatedAuditLog>('GET', `/admin/audit-log${qs ? `?${qs}` : ''}`);
+  },
+
 };

@@ -142,3 +142,24 @@ export interface AdminUser {
   tenantId: string;
   domainsUsedThisMonth: number;
 }
+
+export interface AuditLogEntry {
+  id: string;
+  createdAt: string;
+  action: string;
+  field: string | null;
+  oldValue: string | null;
+  newValue: string | null;
+  adminUser: { id: string; email: string };
+  targetUser: { id: string; email: string };
+}
+
+export interface PaginatedAuditLog {
+  data: AuditLogEntry[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
